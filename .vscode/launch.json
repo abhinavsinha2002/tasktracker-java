@@ -18,8 +18,7 @@
             "request": "launch",
             "mainClass": "com.example.Main",
             "projectName": "tasktracker",
-            "args": ["mark-done",2]
-
+            "args": ["list","in-progress"]
         }
     ]
 }

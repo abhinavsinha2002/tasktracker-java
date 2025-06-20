@@ -2,13 +2,12 @@ package com.example;
 
 import java.util.ArrayList;
 import java.io.*;
-import java.text.ParseException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.List;
 
 
@@ -33,11 +32,104 @@ public class Main {
                 markDone(args);
                 break;
             case "list":
-                System.out.println("This is a switch statement with a boolean expression.");
+                if(args.length==1){
+                    listAll(args);
+                }
+                else if(args.length==2){
+                    switch(args[1]){
+                        case "done":
+                            listDone(args);
+                            break;
+                        case "todo":
+                            listToDo(args);
+                            break;
+                        case "in-progress":
+                            listInProgress(args);
+                            break;
+                        
+                    }
+                }
                 break;
+                
             default:
                 System.out.println("This will not be executed.");
         }
+    }
+
+    public static void listInProgress(String[] args){
+        File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
+        try{
+            String content=new String(Files.readAllBytes(file.toPath()));
+            JSONArray data=new JSONArray(content);
+            for(int i=0;i<data.length();i++){
+                JSONObject obj=data.getJSONObject(i);
+                if(obj.get("status").equals("in-progress")){
+                    System.out.println(obj.toString(4));
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        
+    }
+
+    public static void listToDo(String[] args){
+        File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
+        try{
+            String content=new String(Files.readAllBytes(file.toPath()));
+            JSONArray data=new JSONArray(content);
+            for(int i=0;i<data.length();i++){
+                JSONObject obj=data.getJSONObject(i);
+                if(obj.get("status").equals("todo")){
+                    System.out.println(obj.toString(4));
+                }
+            }
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void listDone(String[] args){
+        File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
+        try{
+            String content=new String(Files.readAllBytes(file.toPath()));
+            JSONArray data=new JSONArray(content);
+            for(int i=0;i<data.length();i++){
+                JSONObject obj=data.getJSONObject(i);
+                if(obj.get("status").equals("done")){
+                    System.out.println(obj.toString(4));
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void listAll(String[] args){
+        File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
+
+        try{
+            String content=new String(Files.readAllBytes(file.toPath()));
+            JSONArray data=new JSONArray(content);
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject jsonobj = data.getJSONObject(i);
+                System.out.println(jsonobj.toString(4));
+            }
+
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     public static void markDone(String[] args){
@@ -48,21 +140,21 @@ public class Main {
             String markId=args[1];
             File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
             try(FileReader reader=new FileReader(file)){
-                JSONParser parser=new JSONParser();
-                JSONArray data=(JSONArray)parser.parse(reader);
+                String content=new String(Files.readAllBytes(file.toPath()));
+                JSONArray data=new JSONArray(content);
                 boolean marked=false;
-                for(Object obj:data){
-                    JSONObject jsonobj=(JSONObject)obj;
-                    if(jsonobj.get("id").equals(markId)){
-                        marked=true;
-                        jsonobj.put("status","done");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonobj = (JSONObject) data.get(i);
+                    if (jsonobj.get("id").equals(markId)) {
+                        marked = true;
+                        jsonobj.put("status", "done");
                         break;
                     }
                 }
 
                 if(marked){
                     try(FileWriter writer=new FileWriter(file)){
-                        writer.write(data.toJSONString());
+                        writer.write(data.toString());
                         writer.flush();
                         System.out.printf("Task with ID:%s marked done",markId);
                     }
@@ -77,13 +169,11 @@ public class Main {
             catch(IOException e){
                 e.printStackTrace();
             }
-            catch(org.json.simple.parser.ParseException e){
-                e.printStackTrace();
-            }
+
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     public static void markInProgress(String[] args){
         if(args.length!=2){
             System.out.println("Error.Wrong command.Type help to learn more about the commands");
@@ -92,22 +182,22 @@ public class Main {
             String markId=args[1];
             File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
             try(FileReader reader=new FileReader(file)){
-                JSONParser parser=new JSONParser();
-                JSONArray data=(JSONArray)parser.parse(reader);
+                String content=new String(Files.readAllBytes(file.toPath()));
+                JSONArray data=new JSONArray(content);
                 boolean marked=false;
 
-                for(Object obj:data){
-                    JSONObject jsonobj=(JSONObject) obj;
-                    if(jsonobj.get("id").equals(markId)){
-                        jsonobj.put("status","in-progress");
-                        marked=true;
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonobj = (JSONObject) data.get(i);
+                    if (jsonobj.get("id").equals(markId)) {
+                        jsonobj.put("status", "in-progress");
+                        marked = true;
                         break;
                     }
                 }
 
                 if(marked){
                     try(FileWriter writer=new FileWriter(file)){
-                        writer.write(data.toJSONString());
+                        writer.write(data.toString());
                         writer.flush();
                         System.out.printf("Task with ID:%s marked in progress",markId);
                     }
@@ -122,9 +212,7 @@ public class Main {
             catch(IOException e){
                 e.printStackTrace();
             }
-            catch(org.json.simple.parser.ParseException e){
-                e.printStackTrace();
-            }
+
         }
     }
 
@@ -137,13 +225,13 @@ public class Main {
             File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
 
             try(FileReader reader=new FileReader(file)){
-                JSONParser parser=new JSONParser();
-                JSONArray data=(JSONArray)parser.parse(reader);
+                String content=new String(Files.readAllBytes(file.toPath()));
+                JSONArray data=new JSONArray(content);
                 boolean deleted=false;
-                for(Object obj:data){
-                    JSONObject jsonobj=(JSONObject)obj;
+                for(int i=0;i<data.length();i++){
+                    JSONObject jsonobj=data.getJSONObject(i);
                     if(jsonobj.get("id").equals(deleteId)){
-                        data.remove(jsonobj);
+                        data.remove(i);
                         deleted=true;
                         break;
                     }
@@ -152,7 +240,7 @@ public class Main {
 
                 if(deleted){
                     try(FileWriter writer=new FileWriter(file)){
-                        writer.write(data.toJSONString());
+                        writer.write(data.toString());
                         writer.flush();
                         System.out.println("Task deleted with ID: "+deleteId);
                     }
@@ -168,9 +256,7 @@ public class Main {
             catch(IOException e){
                 e.printStackTrace();
             }
-            catch(org.json.simple.parser.ParseException e){
-                e.printStackTrace();
-            }
+
         }
     }
 
@@ -184,7 +270,7 @@ public class Main {
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     public static void updateTasks(String[] args){
         if(args.length != 3 || !isStringInt(args[1]) || !(args[2] instanceof String)){
             //System.out.println(args.length);
@@ -197,12 +283,12 @@ public class Main {
             File file=new File("C:/Users/saura/OneDrive/Documents/Projects/tasktracker/src/main/java/com/example/store.json");
 
             try(FileReader reader=new FileReader(file)) {
-                JSONParser parser=new JSONParser();
-                JSONArray data = (JSONArray) parser.parse(reader);
+                String content=new String(Files.readAllBytes(file.toPath()));
+                JSONArray data = new JSONArray(content);
                 boolean ifUpdate=false;
 
-                for(Object obj:data){
-                    JSONObject jsonobj=(JSONObject)obj;
+                for(int i=0;i<data.length();i++){
+                    JSONObject jsonobj=data.getJSONObject(i);
                     if((jsonobj).get("id").equals(updateId)){
                         (jsonobj).put("description",args[2]);
                         (jsonobj).put("updatedAt",String.valueOf(LocalDateTime.now()));
@@ -214,7 +300,7 @@ public class Main {
 
                 if(ifUpdate){
                     try(FileWriter fileWriter=new FileWriter(file)){
-                        fileWriter.write(data.toJSONString());
+                        fileWriter.write(data.toString());
                         fileWriter.flush();
                         System.out.println("Description updated successfully with ID: "+updateId);
                     }
@@ -229,14 +315,13 @@ public class Main {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (org.json.simple.parser.ParseException e) {
-                e.printStackTrace();
             }
+
         }
     }
 
 
-    @SuppressWarnings("unchecked")
+
     public static void addTasks(String[] args) {
         if (args.length <= 1) {
             System.out.println("Error. Missing description after add command");
@@ -248,17 +333,17 @@ public class Main {
             File file=new File(directory+filename);
 
             JSONArray tasks;
-            JSONParser parser=new JSONParser();
 
             if(file.exists()){
-                try(Reader reader=new FileReader(file)){
-                    Object obj=parser.parse(reader);
-                    if(obj instanceof JSONArray){
-                        tasks=(JSONArray)obj;
+                try{
+                    String content=new String(Files.readAllBytes(file.toPath()));
+                    if(content.trim().startsWith("[")){
+                        tasks=new JSONArray(content);
                     }
                     else{
+                        JSONObject obj=new JSONObject(content);
                         tasks=new JSONArray();
-                        tasks.add(obj);
+                        tasks.put(obj);
                     }
                     
                 }
@@ -274,8 +359,8 @@ public class Main {
             JSONObject task=new JSONObject();
             List<JSONObject> list=new ArrayList<>();
 
-            for(Object o:tasks){
-                list.add((JSONObject)o);
+            for(int i=0;i<tasks.length();i++){
+                list.add(tasks.getJSONObject(i));
             }
 
             int new_id = list.stream()
@@ -290,10 +375,10 @@ public class Main {
             task.put("status",Start.status);
             task.put("createdAt",String.valueOf(Start.createdAt));
             task.put("updatedAt",String.valueOf(Start.updatedAt));
-            tasks.add(task);
+            tasks.put(task);
             
             try(Writer writer=new FileWriter(file)){
-                writer.write(tasks.toJSONString());
+                writer.write(tasks.toString());
                 writer.flush();
                 System.out.printf("Task added successfully (ID:%d)",new_id);
             }
