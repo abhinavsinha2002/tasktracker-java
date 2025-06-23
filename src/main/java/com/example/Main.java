@@ -46,13 +46,26 @@ public class Main {
                         case "in-progress":
                             listInProgress(args);
                             break;
+                        default:
+                            System.out.println("Wrong command.Type help to learn more about the commands.");
                         
                     }
                 }
                 break;
+            
+            case "help":
+                System.out.println("The task-tracker supports CRUD operations");
+                System.out.println("1) For Adding a new task, add \"Buy groceries\" ");
+                System.out.println("2) For Updating a task, update 1 \"Buy groceries and cook dinner\" ");
+                System.out.println("3) For Deleting tasks, delete 1");
+                System.out.println("4) For Marking a task as in progress, mark-in-progress 1");
+                System.out.println("5) For Marking a task as done, mark-done 1");
+                System.out.println("6) For Listing all tasks, list");
+                System.out.println("7) For Listing tasks by status, list todo/done/in-progress");
+                break;
                 
             default:
-                System.out.println("This will not be executed.");
+                System.out.println("Wrong command.Type help to learn more about the commands.");
         }
     }
 
@@ -324,7 +337,7 @@ public class Main {
 
     public static void addTasks(String[] args) {
         if (args.length <= 1) {
-            System.out.println("Error. Missing description after add command");
+            System.out.println("Error. Missing description after add command. Type help to get the list of commands.");
         } 
         else {
             // System.out.println("Inside");
